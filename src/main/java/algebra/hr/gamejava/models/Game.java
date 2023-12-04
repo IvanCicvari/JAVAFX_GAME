@@ -17,44 +17,67 @@ public class Game {
 
     boolean gameDirection;
 
-    public Game(String[] pids){
-        deck =new Deck();
+    /**
+     * Constructor for the Game class.
+     *
+     * @param pids An array of player IDs.
+     */
+    public Game(String[] pids) {
+        // Initialize the game components: deck, stock pile, player hands, etc.
+        deck = new Deck();
         deck.shuffle();
-        stockPile =new ArrayList<Card>();
+        stockPile = new ArrayList<>();
 
-        playerID =pids;
-        currentPlayer =0;
+        playerID = pids;
+        currentPlayer = 0;
         gameDirection = false;
 
-        playerHand = new ArrayList<ArrayList<Card>>();
+        playerHand = new ArrayList<>();
 
-        for (int i =0; i< pids.length; i++){
-            ArrayList<Card> hand = new ArrayList<Card>(Arrays.asList(deck.drawCard(7)));
+        // Deal initial hands to players
+        for (int i = 0; i < pids.length; i++) {
+            ArrayList<Card> hand = new ArrayList<>(Arrays.asList(deck.drawCard(7)));
             playerHand.add(hand);
         }
     }
-    public void  start(Game game){
+    /**
+     * Start the game by drawing the initial card and setting the initial player.
+     *
+     * @param game The current game instance.
+     */
+    public void start(Game game) {
+        // Draw a card, set the initial player, and add the card to the stock pile.
         Card card = deck.drawCard();
         validValueOfCard = card.getValueOfCard();
         validConutry = card.getCountry();
 
-        if(!gameDirection){
-            currentPlayer =(currentPlayer+1)% playerID.length;
+        if (!gameDirection) {
+            currentPlayer = (currentPlayer + 1) % playerID.length;
         } else if (gameDirection) {
-            currentPlayer =(currentPlayer-1)% playerID.length;
-            if (currentPlayer == -1){
-                currentPlayer = playerID.length -1;
-            }
+            currentPlayer = (currentPlayer - 1 + playerID.length) % playerID.length;
         }
+
         stockPile.add(card);
     }
 
-    public Card getTopCard(){
-        return new Card(validValueOfCard,validConutry);
+
+    /**
+     * Get the top card of the stock pile.
+     *
+     * @return The top card of the stock pile.
+     */
+    /**
+     * Get the image of the top card of the stock pile.
+     *
+     * @return An ImageView representing the top card image.
+     */
+    public ImageView getTopCardImage() {
+        // Return an ImageView representing the image of the top card.
+        return new ImageView(validValueOfCard + "-" + validConutry + ".png");
     }
-    public ImageView getTopCardImage(){
-        return new ImageView(validValueOfCard+"-"+validConutry+".png");
-    }
+
+    // The 'isGameOver' method was commented out since the new logic needs to be implemented.
+
     /*
     public boolean isGameOver(){
         for (String player:this.playerID){
@@ -64,63 +87,140 @@ public class Game {
         }
         return false;
     }*/ //new logic needs to bee
-    public String getCurrentPlayer(){
+    /**
+     * Get the ID of the current player.
+     *
+     * @return The ID of the current player.
+     */
+    public String getCurrentPlayer() {
+        // Return the ID of the current player.
         return this.playerID[this.currentPlayer];
     }
-    public String getPreviousPlayer(int i){
-        int index = this.currentPlayer-i;
-        if (index == -1)
-        {
-            index =playerID.length-1;
+    /**
+     * Get the ID of the player who played before the current player.
+     *
+     * @param i The number of players to go back.
+     * @return The ID of the player who played before the current player.
+     */
+    public String getPreviousPlayer(int i) {
+        // Return the ID of the player who played before the current player, considering circular rotation.
+        int index = this.currentPlayer - i;
+        if (index == -1) {
+            index = playerID.length - 1;
         }
         return this.playerID[index];
     }
-    public String[] getPlayers(){
+    /**
+     * Get an array of all player IDs.
+     *
+     * @return An array of player IDs.
+     */
+    public String[] getPlayers() {
+        // Return an array of all player IDs.
         return playerID;
     }
-    public ArrayList<Card>getPlayerHand(String pid){
-        int index =Arrays.asList(playerID).indexOf(pid);
+
+    /**
+     * Get the hand of a specific player.
+     *
+     * @param pid The ID of the player.
+     * @return The ArrayList representing the player's hand.
+     */
+    public ArrayList<Card> getPlayerHand(String pid) {
+        // Return the hand of the specified player.
+        int index = Arrays.asList(playerID).indexOf(pid);
         return playerHand.get(index);
     }
 
-    public int getPlayerHandSize(String pid)
-    {
+    /**
+     * Get the size of a specific player's hand.
+     *
+     * @param pid The ID of the player.
+     * @return The size of the player's hand.
+     */
+    public int getPlayerHandSize(String pid) {
+        // Return the size of the specified player's hand.
         return getPlayerHand(pid).size();
     }
-    public Card getPlayerCard(String pid,int choice){
+    /**
+     * Get a specific card from a player's hand.
+     *
+     * @param pid    The ID of the player.
+     * @param choice The index of the card in the player's hand.
+     * @return The specified card from the player's hand.
+     */
+    public Card getPlayerCard(String pid, int choice) {
+        // Return the specified card from the specified player's hand.
         ArrayList<Card> hand = getPlayerHand(pid);
         return hand.get(choice);
     }
 
-    public boolean hasEmptyHand(String pid){
+    /**
+     * Check if a player's hand is empty.
+     *
+     * @param pid The ID of the player.
+     * @return True if the player's hand is empty, false otherwise.
+     */
+    public boolean hasEmptyHand(String pid) {
+        // Check if the player's hand is empty.
         return getPlayerHand(pid).isEmpty();
     }
-    public boolean validCardPlay(Card card){
+
+    /**
+     * Check if playing a card is a valid move.
+     *
+     * @param card The card to be played.
+     * @return True if the card play is valid, false otherwise.
+     */
+    public boolean validCardPlay(Card card) {
+        // Check if playing the given card is a valid move.
         return card.getValueOfCard() == validValueOfCard || card.getCountry() == validConutry;
     }
-    public void checkPlayerTurn(String pid) throws InvalidPlayerTurnException{
-        if (this.playerID[this.currentPlayer] != pid){
-            throw new InvalidPlayerTurnException("It is not" +pid+" 's turn",pid);
+    /**
+     * Check if it is a specific player's turn to take an action.
+     *
+     * @param pid The ID of the player attempting to take an action.
+     * @throws InvalidPlayerTurnException Thrown if it is not the specified player's turn.
+     */
+    public void checkPlayerTurn(String pid) throws InvalidPlayerTurnException {
+        // Check if it is the turn of the specified player to take an action.
+        if (!this.playerID[this.currentPlayer].equals(pid)) {
+            throw new InvalidPlayerTurnException("It is not " + pid + "'s turn", pid);
         }
     }
-    public void  submitDraw(String pid) throws InvalidPlayerTurnException{
-        if (deck.isEmpty()){
+    /**
+     * Check if it is a specific player's turn, and submit a draw action.
+     *
+     * @param pid The ID of the player submitting the draw action.
+     * @throws InvalidPlayerTurnException If it is not the specified player's turn.
+     */
+    public void submitDraw(String pid) throws InvalidPlayerTurnException {
+        // If the deck is empty, replace it with the stock pile, shuffle, and continue drawing.
+        if (deck.isEmpty()) {
             deck.replaceDeckWith(stockPile);
             deck.shuffle();
         }
-        getPlayerHand(pid).add(deck.drawCard());
-        if (!gameDirection){
-            currentPlayer = (currentPlayer+1)%playerID.length;
-        } else if (gameDirection) {
-            currentPlayer = (currentPlayer-1)%playerID.length;
-            if (currentPlayer ==-1)
-            {
-                currentPlayer =playerID.length -1;
-            }
 
+        // Draw a card and add it to the player's hand.
+        getPlayerHand(pid).add(deck.drawCard());
+
+        // Update the current player based on game direction.
+        if (!gameDirection) {
+            currentPlayer = (currentPlayer + 1) % playerID.length;
+        } else if (gameDirection) {
+            currentPlayer = (currentPlayer - 1 + playerID.length) % playerID.length;
+            if (currentPlayer == -1) {
+                currentPlayer = playerID.length - 1;
+            }
         }
     }
-    public void setCardValue (Card.ValueOfCard cardValue){
+    /**
+     * Set the value of the card to be played.
+     *
+     * @param cardValue The value to be set.
+     */
+    public void setCardValue(Card.ValueOfCard cardValue) {
+        // Set the value of the card
         validValueOfCard = cardValue;
     }
 }
