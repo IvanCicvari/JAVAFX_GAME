@@ -1,7 +1,7 @@
 package algebra.hr.gamejava.models;
 
 public class Card {
-    enum ValueOfCard
+    public enum ValueOfCard
     {
         Zero,One,Two,Three,Four;
         private static final ValueOfCard[] value = ValueOfCard.values();
@@ -10,7 +10,7 @@ public class Card {
             return ValueOfCard.value[i];
         }
     }
-    enum Country
+    public enum Country
     {
         USA,USSR;
         private static final Country[] countries = Country.values();

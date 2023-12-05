@@ -1,5 +1,8 @@
 package algebra.hr.gamejava.models;
 
+import algebra.hr.gamejava.customExceptions.InvalidCountrySubmissionException;
+import algebra.hr.gamejava.customExceptions.InvalidPlayerTurnException;
+import algebra.hr.gamejava.customExceptions.InvalidValueOfCardSubmissionException;
 import javafx.scene.image.ImageView;
 
 import java.util.ArrayList;
@@ -13,7 +16,7 @@ public class Game {
     private ArrayList<ArrayList<Card>> playerHand;
     private ArrayList<Card> stockPile;
     private Card.ValueOfCard validValueOfCard;
-    private Card.Country validConutry;
+    private Card.Country validCountry;
 
     boolean gameDirection;
 
@@ -174,7 +177,7 @@ public class Game {
      */
     public boolean validCardPlay(Card card) {
         // Check if playing the given card is a valid move.
-        return card.getValueOfCard() == validValueOfCard || card.getCountry() == validConutry;
+        return card.getValueOfCard() == validValueOfCard || card.getCountry() == validCountry;
     }
     /**
      * Check if it is a specific player's turn to take an action.
@@ -223,4 +226,22 @@ public class Game {
         // Set the value of the card
         validValueOfCard = cardValue;
     }
+
+    public void submitPlayerCard(String pid,Card playerCard,Card.Country declaredValue)
+        throws InvalidValueOfCardSubmissionException, InvalidCountrySubmissionException,InvalidPlayerTurnException
+        {   checkPlayerTurn(pid);
+            ArrayList<Card>pHand =getPlayerHand(pid);
+
+            if (!validCardPlay(playerCard))
+            {
+                if (playerCard.getCountry() != validCountry)
+                {
+                    throw new InvalidCountrySubmissionException("Can't place here. Expected: " + validCountry + " but you placed it on " + playerCard.getCountry(),
+                            validCountry, playerCard.getCountry());                }
+            }
+            pHand.remove(playerCard);
+            // add later for more checks for place a card
+        }
 }
+
+
